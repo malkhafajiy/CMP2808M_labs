@@ -1,0 +1,165 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Untitled Document</title>
+<link href="cloud.css" rel="stylesheet" type="text/css"/>
+	<link rel="stylesheet" href="highlight/styles/default.css">
+	<script src="highlight/highlight.min.js"></script>
+<script>hljs.highlightAll();</script>
+</head>
+
+<body>
+<h1>CMP2808M Workshop 6- Getting started with FastAPI and Visual Studio Code</h1>
+<p>&nbsp;</p>
+<p><img src="images/logo-teal.png" width="596" height="214" alt=""/></p>
+<h2>Introduction</h2>
+<p>For the next few weeks you are going to learn the basics of designing and developing an API with endpoints using <a href="https://fastapi.tiangolo.com/">FastAPI</a>. Understanding the concepts and practical elements of developing an API is a valuable skillset and something many employers are looking for in terms of development and eventual deployment to the cloud. The next 3 workshops will walk you through the basics of API endpoints, data validation, and database connectivity.</p>
+<h2><br aria-hidden="true"> 
+  Setting up a FastAPI project in Visual Studio Code
+</h2>
+<p>Visual Studio Code is already setup with the required plugins in the school's lab machines, if you want to work on your own personal machine you can download, install, and configure the below tools but please note that academic staff cannot support you with any environmental/configuration issues on your own personal machine, you need to sort these yourself or possibly visit the technicians for support.</p>
+<p>Install the below to work on your own personal machine:</p>
+<p><a href="https://www.python.org/downloads/">1. Python SDK</a></p>
+<p><a href="https://code.visualstudio.com/">2. Visual Studio Code</a></p>
+<p><a href="https://marketplace.visualstudio.com/items?itemName=ms-python.python">3. Python extension for Visual Studio Code</a></p>
+<p>OK - to start developing a FastAPI project, first create a folder on the desktop, you can call it anything you want but for now name the folder <strong>FastAPI_HelloWorld_v1</strong>. Next, open Visual Studio Code (ensure there are no folders/files open when it has launched, if so close them), open the <strong>FastAPI_HelloWorld_v1</strong> folder and trust its content if you see the pop up:</p>
+<p>&nbsp;</p>
+<p><img src="images/w1_image.png" width="369" height="323" alt=""/></p>
+<p>&nbsp;</p>
+<p><img src="images/w2_image.png" width="523" height="386" alt=""/></p>
+<p>You will now see your folder is open in VSC on the left panel. Next,  create a file called <strong>requirements.txt</strong>:</p>
+<p>&nbsp;</p>
+<p><img src="images/w3_image.png" width="472" height="291" alt=""/></p>
+<p>&nbsp;</p>
+<p>The <strong>requirements.txt </strong>file  lists the dependencies you wish to install for the application. The requirements.txt file is a common practice in Python development, used to specify the libraries that your project relies on and their versions. This file helps ensure that anyone working on the project can recreate a similar development environment, making it a convenient component for maintaining consistency. Add the below dependencies to the file:</p>
+<p><pre><code>
+fastapi
+mysqlclient
+uvicorn
+</code></pre>
+</p>
+<p><img src="images/w4_image.png" width="580" height="278" alt=""/></p>
+<p>Next, save the file either by File&gt;Save or CTRL+S.</p>
+<p>The lines of code you have added to requirements.txt will linstall FastAPI for creating the API app, <a href="https://www.uvicorn.org/" target="_blank">uvicorn</a> to work as the local server to host and test the API, and mysqlclient for handling data storage and interacting with a MySQL database. You will not be integrating the database component in the API in this workshop, however it will be setup to do so in the future.</p>
+<p>Next, you will setup a virtual environment to debug and test the FastAPI app, as well as download the dependencies in the requirements.txt file, follow the steps below:</p>
+<p>1. Open the command palette (Ctrl+Shift+P) and select the <strong>Python: Create Environment</strong> command (you may need to type 'create environment' to see it in list):</p>
+<p>&nbsp;</p>
+<p><img src="images/w5_image.png" width="611" height="190" alt=""/></p>
+<p>&nbsp;</p>
+<p>2. Select the <strong>Venv</strong> environment type:</p>
+<p><img src="images/w6_image.png" width="643" height="96" alt=""/></p>
+<p>&nbsp;</p>
+<p>3. Next, select the latest version (if more than one version available) of Python on the machine:</p>
+<p><img src="images/w7_image.png" width="642" height="116" alt=""/></p>
+<p>&nbsp;</p>
+<p>4. Next, select the requirements.txt file from the dropdown list, so the dependencies are automatically installed, and then select <strong>OK</strong>:</p>
+<p><img src="images/w8_image.png" width="639" height="72" alt=""/></p>
+<p>&nbsp;</p>
+<p>5. The virtual environment will now be created and could take a minute or two to install. This means the dependencies will automatically beinstalled, and the environment selected (Venv) for your workspace to be used by the Python extension. </p>
+<p><img src="images/w9_image.png" width="634" height="200" alt=""/></p>
+<h2>&nbsp;</h2>
+<h2>Coding the FastAPI app</h2>
+<p>With the project folder configured, you can now start coding the app. Create a new python file called <strong>main.py</strong>, ensure it is placed outside the Venv folder:</p>
+<p><img src="images/w10_image.png" width="274" height="202" alt=""/></p>
+<p>&nbsp;</p>
+<p>Next, enter the below code in the <strong>main.py</strong> file</p>
+<pre><code>
+
+from fastapi import FastAPI
+
+app = FastAPI()
+
+@app.get("/")
+def root():
+    return {"message": "Hello World"}
+</code></pre>
+<p>&nbsp;</p>
+<p>Save the main.py file and then run the code by either going to Run&gt;Start Debugging or hit [F5]. From the dropdown menus, select <strong>Python Debugger</strong> and then <strong>FastAPI</strong> as below:</p>
+<p>&nbsp;</p>
+<p><img src="images/w11_image.png" width="671" height="244" alt=""/></p>
+<p><img src="images/w12_image.png" width="667" height="288" alt=""/></p>
+<p>&nbsp;</p>
+<p>This invokes uvicorn to start the application server through the debugger and allow you to step through the source code to inspect its behavior. You should see something like the following under the terminal tab in bottom pane of VSC:</p>
+<p><img src="images/w13_image.png" width="751" height="241" alt=""/></p>
+<p>&nbsp;</p>
+<p>Highlighted in the screenshot above is the IP address and port number where unicorn is hosting and running the FastAPI app. Hover over the IP address and hold (CTRL) + click and the browser will launch with the address, if all is well you will see the below in browser:</p>
+<p>&nbsp;</p>
+<p><img src="images/w15_image.png" width="665" height="427" alt=""/></p>
+<p>&nbsp;</p>
+<p>Now stop the debugger by going to Run&gt;stop debugging or clicking on stop icon at top:</p>
+<p>&nbsp;</p>
+<p><img src="images/w14_image.png" width="670" height="100" alt=""/></p>
+<p>&nbsp;</p>
+<p>Well done! You have created your first API, even though it does not really do anything yet :)</p>
+<p><strong>Simple task</strong>:</p>
+<p>Change the <strong>'Hello World'</strong> text to return your name instead and test it again. dont forget you will need to save the file each time you make changes.</p>
+<h2>Swagger UI</h2>
+<p>FastAPI comes with the Swagger UI built in which automatically creates OpenAPI documentation for your API, it also facilitates testing your endpoints when they are ready.</p>
+<p>Run your code again and click on the IP host address again, the uvicorn server app is running at this address. Change the address in the browser by adding /docs at the end so it looks like this: http://127.0.0.1:8000/docs , you will now see the Swagger interface open:</p>
+<p>&nbsp;</p>
+<p><img src="images/w16_image.png" width="754" height="517" alt=""/></p>
+<p>If you look at your code in main.py you can see it has a single GET operation that does nothing more that display a message at this point. You can also test this GET operation by clicking on the blue GET button in the Swagger UI then clicking '<strong>Try it out</strong>' then '<strong>Execute</strong>':</p>
+<p>&nbsp;</p>
+<p><img src="images/w17_image.png" width="879" height="811" alt=""/></p>
+<p>&nbsp;</p>
+<p>When you start adding extra endpoints with complexity to your API then you will find the Swagger interface invaluable to help with debugging. Stop your code from running in VSC (Run&gt;Stop Debugging) as you dont need to use the Swagger UI at this point.</p>
+<p>&nbsp;</p>
+<h2>Adding a new route to the API</h2>
+<p>If you look at the code below that is currently in <strong>main.py</strong>, we have a  single GET operation (also known as an <strong>HTTP GET</strong> method) with a route of &quot;/&quot;:</p>
+<p>&nbsp;</p>
+<p><img src="images/w18_image.png" width="774" height="353" alt=""/></p>
+<p>&nbsp;</p>
+<p>You are now going to add a new route called /test/, this will also be a GET operation. Add the below code to the main.py file:</p>
+<pre><code>
+
+@app.get("/test/")
+async def test():
+    return {"message": "Testing"}
+
+</code></pre>
+<p>&nbsp;</p>
+<p><img src="images/w19_image.png" width="512" height="383" alt=""/></p>
+<p>&nbsp;</p>
+<p>You now have two <strong>routes</strong> in your code: &quot;/&quot; and &quot;/test/&quot; and each will return a different message string when invoked. Run the code and do the usual (CTRL) + click on the IP address in the terminal window so the uvicorn server is run with your code. It will open the default route of &quot;/&quot; and display the &quot;Hello World!&quot; message. While the code is running, change the URL from 127.0.0.1:8000 to 127.0.0.1:8000/test/ and your newly added /test/ route will be run instead with the message 'Testing' output. Now try 127.0.0.1:8000 again and the default route of &quot;/&quot; will be run.</p>
+<p>Next, lets take a look at the Swagger interface as it should now show that you have two routes using GET operations, change the url to 127.0.0.1:8000/docs and you should see them as below:</p>
+<p>&nbsp;</p>
+<p><img src="images/w20_image.png" width="837" height="504" alt=""/></p>
+<p><strong>Simple task</strong>:</p>
+<p>Add another route that returns a different message and run your API code again, check that all three routes are working and they show in the Swagger UI.</p>
+<p>&nbsp;</p>
+<h2>Add Path Parameters</h2>
+<p>So far, you haved added routes to the code that don't contain any parameters:</p>
+<p><strong>/</strong></p>
+<p><strong>/test/</strong></p>
+<p><strong>/yourroute/</strong></p>
+
+<p>Parameter values are passed into your operation (aka function) where they can be used for other operations, for example you may wish to pass a parameter value into an SQL query. In this example, you will modify the <strong>/test/</strong> route so that it contains the parameter <strong>{yourname}</strong> as below:</p>
+<pre><code>
+
+@app.get("/test/{yourname}")
+async def test(yourname):
+    return {"your name is": yourname }
+
+
+</code></pre>
+<p>With the {yourname} variable added as a path parameter, it can now be passed via the URL. At this point, the /test/ route is now expecting a parameter as below in the URL:</p>
+<p><strong>http://127.0.0.1:8000/test/{yourname}</strong></p>
+<p>If the parameter is not supplied then an error will occur as its not been set up to handle the parameter as optional at this time.</p>
+<p>Run the code and open uvicorn at 127.0.0.1:8000, now modify the URL so it uses the /test/ route with a parameter supplied such /test/Johnny Five:</p>
+<p><strong>http://127.0.0.1:8000/test/Johnny Five</strong></p>
+<p>The output should appear as below as the parameter is passed into the GET operation and output via the message string:</p>
+<p>&nbsp;</p>
+<p><img src="images/w21_image.png" width="665" height="268" alt=""/></p>
+<p>&nbsp;</p>
+<p>You can also supply parameter values via the Swagger interface, try it with the /test/{yourname} path that includes the parameter:</p>
+<p><img src="images/w22_image.png" width="857" height="751" alt=""/></p>
+<p>&nbsp;</p>
+<p><strong>Final task:</strong></p>
+<p>Experiment by creating different parameters, then checking the output by modifying the URL manually and also going through the Swagger UI.</p>
+<h2>Summary</h2>
+<p>Thats all for this week. Next week's workshop will look at query parameters and data validation in your API code using Pydantic.</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+</body>
+</html>
