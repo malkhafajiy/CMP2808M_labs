@@ -18,3 +18,5 @@ https://malkhafajiy.github.io/CMP2808M_23-24_labs/workshop5.html
 https://malkhafajiy.github.io/CMP2808M_23-24_labs/workshop6.html
 
 https://malkhafajiy.github.io/CMP2808M_23-24_labs/workshop7.html
+
+https://malkhafajiy.github.io/CMP2808M_23-24_labs/workshop8.html
