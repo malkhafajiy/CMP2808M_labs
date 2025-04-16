@@ -12,7 +12,7 @@
 <body>
     <h1>CMP2808M Workshop 9 - Integrating FASTAPI Application to a Database and securing the Endpoints</h1>
 <p>&nbsp;</p>
-<p><img src="images/logo-teal2.png" width="500" height="400" alt=""/></p>
+<p><img src="Workshop9/logo-teal2.png" width="500" height="400" alt=""/></p>
 <h2>Introduction</h2>
 <p>In this tutorial, you are going to learn the basics of designing and developing an API with endpoints using <a href="https://fastapi.tiangolo.com/">FastAPI</a> and integrating your application to a database. Upon successful connection to the database, you will also register a user and authorise access using JSON Web Token (JWT).  Understanding the concepts and practical elements of developing an API is a valuable skillset and something many employers are looking for in terms of development, security and eventual deployment to the cloud (DevSecOps).</p>
 <h2><br aria-hidden="true"> 
@@ -21,9 +21,9 @@
 <p>By now, you are familiar with the initial FastAPI project/application setup. However, this is repeated so that each workshop presents a complete walkthrough.</p>
 <p>OK - to start developing a FastAPI project, first create a folder on the desktop, you can call it <strong>MyCoursework</strong>. Next, open Visual Studio Code (ensure there are no folders/files open when it has launched, if so close them), open the <strong>MyCoursework</strong> folder and trust its content if you see the pop up:</p>
 <p>&nbsp;</p>
-<p><img src="images/w1_image.png" width="369" height="323" alt=""/></p>
+<p><img src="Workshop9/w1_image.png" width="369" height="323" alt=""/></p>
 <p>&nbsp;</p>
-<p><img src="images/w2_image.png" width="523" height="386" alt=""/></p>
+<p><img src="Workshop9/w2_image.png" width="523" height="386" alt=""/></p>
 <p>You will now see your folder is open in VSC on the left panel. Next,  create a file called <strong>requirements.txt</strong>:</p>
 <p>The <strong>requirements.txt </strong>file  lists the dependencies you wish to install for the application. The requirements.txt file is a common practice in Python development, used to specify the libraries that your project relies on and their versions. This file helps ensure that anyone working on the project can recreate a similar development environment, making it a convenient component for maintaining consistency. Add the below dependencies to the file:</p>
 <p><pre><code>
@@ -39,22 +39,22 @@ bcrypt==3.2.0
 <p>Next, you will setup a virtual environment to debug and test the FastAPI app, as well as download the dependencies in the requirements.txt file, follow the steps below:</p>
 <p>1. Open the command palette (Ctrl+Shift+P) and select the <strong>Python: Create Environment</strong> command (you may need to type 'create environment' to see it in list):</p>
 <p>&nbsp;</p>
-<p><img src="images/Picture1.png" width="611" height="190" alt=""/></p>
+<p><img src="Workshop9/Picture1.png" width="611" height="190" alt=""/></p>
 <p>2. Select the <strong>Venv</strong> environment type:</p>
-<p><img src="images/w6_image.png" width="643" height="96" alt=""/></p>
+<p><img src="Workshop9/w6_image.png" width="643" height="96" alt=""/></p>
 <p>&nbsp;</p>
 <p>3. Next, select the latest version (if more than one version available) of Python on the machine:</p>
-<p><img src="images/w7_image.png" width="642" height="116" alt=""/></p>
+<p><img src="Workshop9/w7_image.png" width="642" height="116" alt=""/></p>
 <p>&nbsp;</p>
 <p>4. Next, select the requirements.txt file from the dropdown list, so the dependencies are automatically installed, and then select <strong>OK</strong>:</p>
-<p><img src="images/w8_image.png" width="439" height="30" alt=""/></p>
+<p><img src="Workshop9/w8_image.png" width="439" height="30" alt=""/></p>
 <p>&nbsp;</p>
 <p>5. The virtual environment will now be created and could take a minute or two to install. This means the dependencies will automatically beinstalled, and the environment selected (Venv) for your workspace to be used by the Python extension. </p>
-<p><img src="images/w9_image.png" width="634" height="200" alt=""/></p>
+<p><img src="Workshop9/w9_image.png" width="634" height="200" alt=""/></p>
 <h2>&nbsp;</h2>
 <h2>Coding the FastAPI app</h2>
 <p>6. With the project folder configured, you can now start coding the app. Create a new python file called <strong>main.py</strong>, ensure it is placed outside the Venv folder:</p>
-<p><img src="images/Picture3b.png" width="274" height="202" alt=""/></p>
+<p><img src="Workshop9/Picture3b.png" width="274" height="202" alt=""/></p>
 <p>&nbsp;</p>
 <p>7. Next, enter the below code in the <strong>main.py</strong> file</p>
 <pre><code>
@@ -156,12 +156,12 @@ class AuthHandler():
 <p>9. Save the main.py, auth.py,schemas.py & dbConn.py  file and then run the code by either going to  Run&gt;Start Debugging or hit [F5]. From the dropdown menus, select <strong>Python Debugger</strong> and then <strong>FastAPI</strong> as below:</p>
 <p>This invokes uvicorn to start the application server through the debugger and allow you to step through the source code to inspect its behaviour. You should see something like the following under the terminal tab in bottom pane of VSC.</p>
 <p>&nbsp;</p>
-<p><img src="images/w11_image.png" width="671" height="244" alt=""/></p>
-<p><img src="images/w12_image.png" width="667" height="288" alt=""/></p>
-<p><img src="images/w13_image.png" width="750" height="250" alt=""/></p>
+<p><img src="Workshop9/w11_image.png" width="671" height="244" alt=""/></p>
+<p><img src="Workshop9/w12_image.png" width="667" height="288" alt=""/></p>
+<p><img src="Workshop9/w13_image.png" width="750" height="250" alt=""/></p>
 <p>&nbsp;</p>
 <p>10. Open Docker Desktop app on your local machine to start your AdventureWorks database server. AdventureWorks database is a popular sample database for developers and database administrators. The database contains data such as the parts and materials to manufacture cycles as well as customer information.  
-<p><img src="images/w14_image.png" width="650" height="300" alt=""/></p>
+<p><img src="Workshop9/w14_image.png" width="650" height="300" alt=""/></p>
 <h2><br aria-hidden="true"> 
     Define routes in your FastAPI application
   </h2>
@@ -341,16 +341,16 @@ Check if your added route is working
       </h2>  
 <p>12. Start the debugger (F5), and then navigate to <strong>http://127.0.0.1:8000/docs</strong> in the browser.
     There should be a Swagger interface with four(7) endpoints available in the app.</p>    
-<p><img src="images/Picture4b.png" width="400" height="350" alt=""/></p>
-<p><img src="images/Picture4bb.png" width="751" height="241" alt=""/></p>
+<p><img src="Workshop9/Picture4b.png" width="400" height="350" alt=""/></p>
+<p><img src="Workshop9/Picture4bb.png" width="751" height="241" alt=""/></p>
 <p>&nbsp;</p> 
 <p>13. Select the drop down arrow next to the /POST/register route to expand it, and then the Try it out button that appears on the right side. Enter a username and password to register a user<p> 
-    <p><img src="images/Picture5b1.png" width="250" height="50" alt=""/></p>
+    <p><img src="Workshop9/Picture5b1.png" width="250" height="50" alt=""/></p>
 <p>&nbsp;</p>  
 <p>14. Select the drop down arrow next to the /POST/login route to expand it, and then the Try it out button that appears on the right side. Enter a the registered username and password to obtain a token. Copy the token and use it to authorise the user in the protected tag endpoints<p> 
-    <p><img src="images/Picture5b2.png" width="250" height="50" alt=""/></p>
-    <p><img src="images/Picture5b3.png" width="751" height="241" alt=""/></p>
-    <p><img src="images/Picture5b4.png" width="751" height="241" alt=""/></p>
+    <p><img src="Workshop9/Picture5b2.png" width="250" height="50" alt=""/></p>
+    <p><img src="Workshop9/Picture5b3.png" width="751" height="241" alt=""/></p>
+    <p><img src="Workshop9/Picture5b4.png" width="751" height="241" alt=""/></p>
 <p>&nbsp;</p>  
 
 <h2>Final task</h2> 
