@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="utf-8">
-<title>CMP2808M Workshop 8</title>
+<title>CMP2808M Workshop 9</title>
 <link href="cloud.css" rel="stylesheet" type="text/css"/>
 	<link rel="stylesheet" href="highlight/styles/default.css">
 	<script src="highlight/highlight.min.js"></script>
@@ -96,53 +96,64 @@ db_config = {
 conn = MySQLdb.connect(**db_config)              
 </code></pre>
 <p>&nbsp;</p>
-<p>8b. Create a new Python file with File > New File… and then select Python File. Add the following lines to your new file and save as auth.py. The auth.py will hold your authentication logic that the Endpoints will use</p>
+<p>8b. Create a new Python file with File > New File… and then select Python File. Add the following lines to your new file and save as schemas.py</p>
 <pre><code>
-    import jwt
-    from fastapi import HTTPException, Security
-    from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
-    from passlib.context import CryptContext
-    from datetime import datetime, timedelta
-    
-    
-    class AuthHandler():
-        security = HTTPBearer()
-        pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-        secret = 'SECRET'
-    
-        def get_password_hash(self, password):
-            return self.pwd_context.hash(password)
-    
-        def verify_password(self, plain_password, hashed_password):
-            return self.pwd_context.verify(plain_password, hashed_password)
-    
-        def encode_token(self, user_id):
-            payload = {
-                'exp': datetime.utcnow() + timedelta(days=0, minutes=5),
-                'iat': datetime.utcnow(),
-                'sub': user_id
-            }
-            return jwt.encode(
-                payload,
-                self.secret,
-                algorithm='HS256'
-            )
-    
-        def decode_token(self, token):
-            try:
-                payload = jwt.decode(token, self.secret, algorithms=['HS256'])
-                return payload['sub']
-            except jwt.ExpiredSignatureError:
-                raise HTTPException(status_code=401, detail='Signature has expired')
-            except jwt.InvalidTokenError as e:
-                raise HTTPException(status_code=401, detail='Invalid token')
-    
-        def auth_wrapper(self, auth: HTTPAuthorizationCredentials = Security(security)):
-            return self.decode_token(auth.credentials)             
+#create a schema for your login details using the code below
+
+from pydantic import BaseModel 
+class AuthDetails(BaseModel):
+    username: str 
+    password: str              
 </code></pre>
 <p>&nbsp;</p>
 
-<p>9. Save the main.py, auth.py & dbConn.py  file and then run the code by either going to  Run&gt;Start Debugging or hit [F5]. From the dropdown menus, select <strong>Python Debugger</strong> and then <strong>FastAPI</strong> as below:</p>
+<p>8c. Create a new Python file with File > New File… and then select Python File. Add the following lines to your new file and save as auth.py. The auth.py will hold your authentication logic that the Endpoints will use</p>
+<pre><code>
+import jwt
+from fastapi import HTTPException, Security
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+from passlib.context import CryptContext
+from datetime import datetime, timedelta
+
+
+class AuthHandler():
+    security = HTTPBearer()
+    pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+    secret = 'SECRET'
+
+    def get_password_hash(self, password):
+        return self.pwd_context.hash(password)
+
+    def verify_password(self, plain_password, hashed_password):
+        return self.pwd_context.verify(plain_password, hashed_password)
+
+    def encode_token(self, user_id):
+        payload = {
+            'exp': datetime.utcnow() + timedelta(days=0, minutes=5),
+            'iat': datetime.utcnow(),
+            'sub': user_id
+        }
+        return jwt.encode(
+            payload,
+            self.secret,
+            algorithm='HS256'
+        )
+
+    def decode_token(self, token):
+        try:
+            payload = jwt.decode(token, self.secret, algorithms=['HS256'])
+            return payload['sub']
+        except jwt.ExpiredSignatureError:
+            raise HTTPException(status_code=401, detail='Signature has expired')
+        except jwt.InvalidTokenError as e:
+            raise HTTPException(status_code=401, detail='Invalid token')
+
+    def auth_wrapper(self, auth: HTTPAuthorizationCredentials = Security(security)):
+        return self.decode_token(auth.credentials)             
+</code></pre>
+<p>&nbsp;</p>
+
+<p>9. Save the main.py, auth.py,schemas.py & dbConn.py  file and then run the code by either going to  Run&gt;Start Debugging or hit [F5]. From the dropdown menus, select <strong>Python Debugger</strong> and then <strong>FastAPI</strong> as below:</p>
 <p>This invokes uvicorn to start the application server through the debugger and allow you to step through the source code to inspect its behaviour. You should see something like the following under the terminal tab in bottom pane of VSC.</p>
 <p>&nbsp;</p>
 <p><img src="images/w11_image.png" width="671" height="244" alt=""/></p>
@@ -157,172 +168,172 @@ conn = MySQLdb.connect(**db_config)
 <p>11. In the context of web applications, routes are like pathways that map specific URLs to the code that handles them. These routes serve as the entry points for the different functionality within application. When a client, sends a request to your application with a particular URL, FastAPI routes that request to the appropriate function (also known as route handler or view function) based on the URL, and that function processes the request and generates a response. Replace your main.py file with the following code to update the route with three (3) different POST, (2) GET, (1) PUT and (1) DELETE requests:
     </p>
 <pre><code>
-    from itertools import product
-    from fastapi import FastAPI, HTTPException, Depends, status
-    from pydantic import BaseModel
-    from typing import List, Optional
-    from dbConn import conn
-    from auth import AuthHandler
-    from schemas import AuthDetails
+from itertools import product
+from fastapi import FastAPI, HTTPException, Depends, status
+from pydantic import BaseModel
+from typing import List, Optional
+from dbConn import conn
+from auth import AuthHandler
+from schemas import AuthDetails
+    
+app = FastAPI()
+# Pydantic model to define the schema of the data for GET PUT POST DELETE
+class Products(BaseModel):
+    ProductID: int 
+    Name: str 
+class ProductQuantities(BaseModel):
+    ProductID: int
+    Name: str
+    ProductNumber: str
+    TotalQuantity: int
+    SafetyStockLevel: int
+    ReorderPoint: int
+    StandardCost: float
+    ListPrice: float
+
+class EmployeePay(BaseModel):
+    BusinessEntityID: int
+    NationalIDNumber: int
+    Name: Optional[str] = None
+    OrganizationLevel: Optional[int] = None
+    JobTitle: Optional[str] = None
+    Rate: float
+    PayFrequency:int
+
+
+
+auth_handler = AuthHandler()
+users = []
+
+@app.post('/register', status_code=201)
+def register(auth_details: AuthDetails):
+    if any(x['username'] == auth_details.username for x in users):
+        raise HTTPException(status_code=400, detail='Username is taken')
+    hashed_password = auth_handler.get_password_hash(auth_details.password)
+    users.append({
+        'username': auth_details.username,
+        'password': hashed_password    
+    })
+    return
+
+
+@app.post('/login')
+def login(auth_details: AuthDetails):
+    user = None
+    for x in users:
+        if x['username'] == auth_details.username:
+            user = x
+            break
+    
+    if (user is None) or (not auth_handler.verify_password(auth_details.password, user['password'])):
+        raise HTTPException(status_code=401, detail='Invalid username and/or password')
+    token = auth_handler.encode_token(user['username'])
+    return { 'token': token }
+
+    
+
+
+@app.get("/products/all", response_model=List[Products])
+def unprotected():
+    cursor = conn.cursor()
+    query = "SELECT ProductID, Name FROM Production_Product LIMIT 50"
+    cursor.execute(query)
         
-    app = FastAPI()
-    # Pydantic model to define the schema of the data for GET PUT POST DELETE
-    class Products(BaseModel):
-        ProductID: int 
-        Name: str 
-    class ProductQuantities(BaseModel):
-        ProductID: int
-        Name: str
-        ProductNumber: str
-        TotalQuantity: int
-        SafetyStockLevel: int
-        ReorderPoint: int
-        StandardCost: float
-        ListPrice: float
+    item = cursor.fetchall()
+    cursor.close()
+    if item is None:
+        raise HTTPException(status_code=404, detail="Item not found")
+    item = [Products(ProductID=productitem[0], Name=productitem[1]) for productitem in item]
+    return item
+
+#@app.get('/protected')
+#def protected(username=Depends(auth_handler.auth_wrapper)):
+    #return { 'name': username }
+
+###
+# The GET endpoint will retrieve all products that have the SUM of inventory quantity lower than the stated reorder point.
+@app.get("/products/reorder", response_model=List[ProductQuantities],)
+def get_all_reorder_products():
+    cursor = conn.cursor()
+    # Query, execute and fetchall below are used to retrieve
+    cursor.execute("SELECT Production_Product.ProductID, Production_Product.Name, Production_Product.ProductNumber, SUM(Production_ProductInventory.Quantity), Production_Product.SafetyStockLevel, Production_Product.ReorderPoint, StandardCost, ListPrice FROM AdventureWorks2019.Production_Product LEFT JOIN Production_ProductInventory ON Production_Product.ProductID = Production_ProductInventory.ProductID GROUP BY ProductID HAVING SUM(Production_ProductInventory.Quantity) <= Production_Product.ReorderPoint;") #SQL query executed
+    item = cursor.fetchall()
+    # Error handling in case there are no products matching this query.
+    if cursor.rowcount == 0:
+        raise HTTPException(status_code=404, detail="No product found to reorder")
+    cursor.close()
+    item = [ProductQuantities(ProductID=productitem[0], Name=productitem[1], ProductNumber=productitem[2], TotalQuantity=productitem[3], SafetyStockLevel=productitem[4], ReorderPoint=productitem[5], StandardCost=productitem[6], ListPrice=productitem[7]) for productitem in item]
+    return item
+
     
-    class EmployeePay(BaseModel):
-        BusinessEntityID: int
-        NationalIDNumber: int
-        Name: Optional[str] = None
-        OrganizationLevel: Optional[int] = None
-        JobTitle: Optional[str] = None
-        Rate: float
-        PayFrequency:int
-    
-    
-    
-    auth_handler = AuthHandler()
-    users = []
-    
-    @app.post('/register', status_code=201)
-    def register(auth_details: AuthDetails):
-        if any(x['username'] == auth_details.username for x in users):
-            raise HTTPException(status_code=400, detail='Username is taken')
-        hashed_password = auth_handler.get_password_hash(auth_details.password)
-        users.append({
-            'username': auth_details.username,
-            'password': hashed_password    
-       })
-        return
-    
-    
-    @app.post('/login')
-    def login(auth_details: AuthDetails):
-        user = None
-        for x in users:
-            if x['username'] == auth_details.username:
-                user = x
-                break
-        
-        if (user is None) or (not auth_handler.verify_password(auth_details.password, user['password'])):
-            raise HTTPException(status_code=401, detail='Invalid username and/or password')
-        token = auth_handler.encode_token(user['username'])
-        return { 'token': token }
-    
-       
-    
-    
-    @app.get("/products/all", response_model=List[Products])
-    def unprotected():
-        cursor = conn.cursor()
-        query = "SELECT ProductID, Name FROM Production_Product LIMIT 50"
-        cursor.execute(query)
-          
-        item = cursor.fetchall()
-        cursor.close()
-        if item is None:
-            raise HTTPException(status_code=404, detail="Item not found")
-        item = [Products(ProductID=productitem[0], Name=productitem[1]) for productitem in item]
-        return item
-    
-    #@app.get('/protected')
-    #def protected(username=Depends(auth_handler.auth_wrapper)):
-        #return { 'name': username }
-    
-    ###
-    # The GET endpoint will retrieve all products that have the SUM of inventory quantity lower than the stated reorder point.
-    @app.get("/products/reorder", response_model=List[ProductQuantities],)
-    def get_all_reorder_products():
-        cursor = conn.cursor()
-        # Query, execute and fetchall below are used to retrieve
-        cursor.execute("SELECT Production_Product.ProductID, Production_Product.Name, Production_Product.ProductNumber, SUM(Production_ProductInventory.Quantity), Production_Product.SafetyStockLevel, Production_Product.ReorderPoint, StandardCost, ListPrice FROM AdventureWorks2019.Production_Product LEFT JOIN Production_ProductInventory ON Production_Product.ProductID = Production_ProductInventory.ProductID GROUP BY ProductID HAVING SUM(Production_ProductInventory.Quantity) <= Production_Product.ReorderPoint;") #SQL query executed
-        item = cursor.fetchall()
-        # Error handling in case there are no products matching this query.
-        if cursor.rowcount == 0:
-            raise HTTPException(status_code=404, detail="No product found to reorder")
-        cursor.close()
-        item = [ProductQuantities(ProductID=productitem[0], Name=productitem[1], ProductNumber=productitem[2], TotalQuantity=productitem[3], SafetyStockLevel=productitem[4], ReorderPoint=productitem[5], StandardCost=productitem[6], ListPrice=productitem[7]) for productitem in item]
-        return item
-    
-      
-    
-    
-    # PUT endpoint that allows list price information stored in the Production_Product table to be changed/updated.
-    @app.put("/products/change/listprice/{productId}/{listPrice}")
-    def update_list_price(productId: int, listPrice: float):
-        cursor = conn.cursor()
-        # Error handling ensures that the ProductID/product exists before changes are made.
-        query = ("SELECT ProductID FROM AdventureWorks2019.Production_Product WHERE ProductID=%s;")
-        cursor.execute (query, (productId,))
-        item = cursor.fetchone()
-        if item is None:
-            raise HTTPException(status_code=400, detail="Product not found")
-        # Query, execute and commit will PUT the new data to the database.
-        query = ("UPDATE AdventureWorks2019.Production_Product SET ListPrice=%s, ModifiedDate=Now() WHERE ProductID=%s;")
-        cursor.execute (query, (listPrice, productId))
-        conn.commit()
-        cursor.close()
-        # HTTPException is used to confirm that the PUT has completed.
-        raise HTTPException(status_code=200, detail="Price has been updated")
-    
-    # DELETE endpoint that allows review to be deleted from the Production_ProductReview table.
-    @app.delete("/products/delete/review/{productReviewId}",tags=["Protected"])
-    def delete_product_review(productReviewId: int, username: str = Depends(auth_handler.auth_wrapper)):
-        cursor = conn.cursor()
-        # Error handling ensures that ProductReviewID/product review exists before it is deleted.
-        query = ("SELECT ProductReviewID FROM AdventureWorks2019.Production_ProductReview WHERE ProductReviewID=%s;")
-        cursor.execute (query, (productReviewId,))
-        item = cursor.fetchone()
-        if item is None:
-            raise HTTPException(status_code=400, detail="Review not found")
-        # Query, execute and commit below will DELETE the specified data from the database.
-        query = ("DELETE FROM AdventureWorks2019.Production_ProductReview WHERE ProductReviewID=%s;")
-        cursor.execute (query, (productReviewId,))
-        conn.commit()
-        cursor.close()
-        # HTTPException is used to confirm that the DELETE has completed successfully.
-        raise HTTPException(status_code=200, detail="Review has been deleted")
-    
-    
-    @app.post("/products/new/review/{productId}/{reviewerName}/{emailAddress}/{rating}", tags=["Protected"])
-    def add_new_product_review(productId: int, reviewerName: str, emailAddress: str, rating: int, comment: str, username: str = Depends(auth_handler.auth_wrapper)):
-        cursor = conn.cursor()
-        # Error handling and data consistency, ensures that the ProductID/product to be reviewed already exist in the database.
-        query = ("SELECT ProductID FROM AdventureWorks2019.Production_Product WHERE ProductID=%s;")
-        cursor.execute (query, (productId,))
-        item = cursor.fetchone()
-        if item is None:
-            raise HTTPException(status_code=400, detail="Product does not exist")
-        # Data consistency ensures that the rating can only be between 1 and 5.
-        if rating < 1 or rating > 5:
-            raise HTTPException(status_code=400, detail="Product is only rated between 1 and 5")
-        # Retrieves the new unique primary key identifier for the INSERT INTO query.
-        query = ("SELECT IFNULL((SELECT (MAX(ProductReviewID) +1) FROM AdventureWorks2019.Production_ProductReview), '1');")
-        cursor.execute (query)
-        productReviewId = cursor.fetchone()
-        # Query, execute and commit below will POST the data to the database.
-        query = ("INSERT INTO AdventureWorks2019.Production_ProductReview VALUES (%s , %s, %s, (NOW()), %s, %s, %s, (NOW())); ")
-        cursor.execute (query, (productReviewId, productId, reviewerName, emailAddress, rating, comment))
-        conn.commit()
-        cursor.close()
-        # HTTPException is used to confirm that the POST has succeeded.
-        #raise HTTPException(status_code=200, detail="New product review has been added")
-        return {
-            "message": "New product review has been added successfully",
-            "reviewed_by": username,
-            "product_id": productId
-        }
-    
+
+
+# PUT endpoint that allows list price information stored in the Production_Product table to be changed/updated.
+@app.put("/products/change/listprice/{productId}/{listPrice}")
+def update_list_price(productId: int, listPrice: float):
+    cursor = conn.cursor()
+    # Error handling ensures that the ProductID/product exists before changes are made.
+    query = ("SELECT ProductID FROM AdventureWorks2019.Production_Product WHERE ProductID=%s;")
+    cursor.execute (query, (productId,))
+    item = cursor.fetchone()
+    if item is None:
+        raise HTTPException(status_code=400, detail="Product not found")
+    # Query, execute and commit will PUT the new data to the database.
+    query = ("UPDATE AdventureWorks2019.Production_Product SET ListPrice=%s, ModifiedDate=Now() WHERE ProductID=%s;")
+    cursor.execute (query, (listPrice, productId))
+    conn.commit()
+    cursor.close()
+    # HTTPException is used to confirm that the PUT has completed.
+    raise HTTPException(status_code=200, detail="Price has been updated")
+
+# DELETE endpoint that allows review to be deleted from the Production_ProductReview table.
+@app.delete("/products/delete/review/{productReviewId}",tags=["Protected"])
+def delete_product_review(productReviewId: int, username: str = Depends(auth_handler.auth_wrapper)):
+    cursor = conn.cursor()
+    # Error handling ensures that ProductReviewID/product review exists before it is deleted.
+    query = ("SELECT ProductReviewID FROM AdventureWorks2019.Production_ProductReview WHERE ProductReviewID=%s;")
+    cursor.execute (query, (productReviewId,))
+    item = cursor.fetchone()
+    if item is None:
+        raise HTTPException(status_code=400, detail="Review not found")
+    # Query, execute and commit below will DELETE the specified data from the database.
+    query = ("DELETE FROM AdventureWorks2019.Production_ProductReview WHERE ProductReviewID=%s;")
+    cursor.execute (query, (productReviewId,))
+    conn.commit()
+    cursor.close()
+    # HTTPException is used to confirm that the DELETE has completed successfully.
+    raise HTTPException(status_code=200, detail="Review has been deleted")
+
+
+@app.post("/products/new/review/{productId}/{reviewerName}/{emailAddress}/{rating}", tags=["Protected"])
+def add_new_product_review(productId: int, reviewerName: str, emailAddress: str, rating: int, comment: str, username: str = Depends(auth_handler.auth_wrapper)):
+    cursor = conn.cursor()
+    # Error handling and data consistency, ensures that the ProductID/product to be reviewed already exist in the database.
+    query = ("SELECT ProductID FROM AdventureWorks2019.Production_Product WHERE ProductID=%s;")
+    cursor.execute (query, (productId,))
+    item = cursor.fetchone()
+    if item is None:
+        raise HTTPException(status_code=400, detail="Product does not exist")
+    # Data consistency ensures that the rating can only be between 1 and 5.
+    if rating < 1 or rating > 5:
+        raise HTTPException(status_code=400, detail="Product is only rated between 1 and 5")
+    # Retrieves the new unique primary key identifier for the INSERT INTO query.
+    query = ("SELECT IFNULL((SELECT (MAX(ProductReviewID) +1) FROM AdventureWorks2019.Production_ProductReview), '1');")
+    cursor.execute (query)
+    productReviewId = cursor.fetchone()
+    # Query, execute and commit below will POST the data to the database.
+    query = ("INSERT INTO AdventureWorks2019.Production_ProductReview VALUES (%s , %s, %s, (NOW()), %s, %s, %s, (NOW())); ")
+    cursor.execute (query, (productReviewId, productId, reviewerName, emailAddress, rating, comment))
+    conn.commit()
+    cursor.close()
+    # HTTPException is used to confirm that the POST has succeeded.
+    #raise HTTPException(status_code=200, detail="New product review has been added")
+    return {
+        "message": "New product review has been added successfully",
+        "reviewed_by": username,
+        "product_id": productId
+    }
+
 </code></pre>
 <p>&nbsp;</p> 
 <h2><br aria-hidden="true"> 
